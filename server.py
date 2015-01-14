@@ -1,6 +1,9 @@
 import SocketServer
 # coding: utf-8
 
+from os import curdir, sep
+from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+
 # Copyright 2013 Abram Hindle, Eddie Antonio Santos
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,12 +30,39 @@ import SocketServer
 # try: curl -v -X GET http://127.0.0.1:8080/
 
 
-class MyWebServer(SocketServer.BaseRequestHandler):
+#class MyWebServer(SocketServer.BaseRequestHandler):
+class MyWebServer(BaseHTTPRequestHandler):
+#def handle(self):
+#        self.data = self.request.recv(1024).strip()
+#       print ("Got a request of: %s\n" % self.data)
+#       self.request.sendall("OK")
     
-    def handle(self):
-        self.data = self.request.recv(1024).strip()
-        print ("Got a request of: %s\n" % self.data)
-        self.request.sendall("OK")
+    def do_GET(self):
+
+#if (self.path.endswith("deep") or self.path.endswith("deep/")):
+#self.path="/deep/index.html"
+        if self.path.endswith("/"):
+            self.path+="index.html"
+
+        try:
+
+            if self.path.endswith(".html"):
+                mimetype='text/html'
+            if self.path.endswith(".css"):
+                mimetype='text/css'
+       
+            f= open(curdir + sep + "/www"+self.path)
+            self.send_response(200)
+            self.send_header('Content-type',mimetype)
+            self.end_headers()
+            self.wfile.write(f.read())
+            f.close()
+        
+            return
+
+        except:
+            self.send_error(404)
+
 
 if __name__ == "__main__":
     HOST, PORT = "localhost", 8080
@@ -40,6 +70,7 @@ if __name__ == "__main__":
     SocketServer.TCPServer.allow_reuse_address = True
     # Create the server, binding to localhost on port 8080
     server = SocketServer.TCPServer((HOST, PORT), MyWebServer)
+
 
     # Activate the server; this will keep running until you
     # interrupt the program with Ctrl-C
