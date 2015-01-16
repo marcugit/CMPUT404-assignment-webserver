@@ -33,17 +33,23 @@ from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 #class MyWebServer(SocketServer.BaseRequestHandler):
 class MyWebServer(BaseHTTPRequestHandler):
 #def handle(self):
-#        self.data = self.request.recv(1024).strip()
+#       self.data = self.request.recv(1024).strip()
 #       print ("Got a request of: %s\n" % self.data)
 #       self.request.sendall("OK")
     
     def do_GET(self):
 
+        redirect = 0
+        new_path=""
 #if (self.path.endswith("deep") or self.path.endswith("deep/")):
 #self.path="/deep/index.html"
         if self.path.endswith("/"):
             self.path+="index.html"
-
+        elif not(self.path.endswith(".html")) and not(self.path.endswith(".css")):
+            new_path=self.path+"/"
+            redirect = 1
+      
+                
         try:
 
             if self.path.endswith(".html"):
@@ -51,14 +57,22 @@ class MyWebServer(BaseHTTPRequestHandler):
             if self.path.endswith(".css"):
                 mimetype='text/css'
        
-            f= open(curdir + sep + "/www"+self.path)
-            self.send_response(200)
-            self.send_header('Content-type',mimetype)
-            self.end_headers()
-            self.wfile.write(f.read())
-            f.close()
+            if redirect==1:
+                self.send_response(302)
+                self.send_header('Location', new_path)
+                self.end_headers()
+            
+                return
+       
+            else:
+                f= open(curdir + sep + "/www" + self.path)
+                self.send_response(200)
+                self.send_header('Content-type',mimetype)
+                self.end_headers()
+                self.wfile.write(f.read())
+                f.close()
         
-            return
+                return
 
         except:
             self.send_error(404)
