@@ -36,20 +36,12 @@ class MyWebServer(BaseHTTPRequestHandler):
 #       self.data = self.request.recv(1024).strip()
 #       print ("Got a request of: %s\n" % self.data)
 #       self.request.sendall("OK")
-    
+
+
     def do_GET(self):
 
-        redirect = 0
-        new_path=""
-#if (self.path.endswith("deep") or self.path.endswith("deep/")):
-#self.path="/deep/index.html"
-        if self.path.endswith("/"):
-            self.path+="index.html"
-        elif not(self.path.endswith(".html")) and not(self.path.endswith(".css")):
-            new_path=self.path+"/"
-            redirect = 1
-      
-                
+        redirect = self.check_Path()
+        
         try:
 
             if self.path.endswith(".html"):
@@ -59,7 +51,7 @@ class MyWebServer(BaseHTTPRequestHandler):
        
             if redirect==1:
                 self.send_response(302)
-                self.send_header('Location', new_path)
+                self.send_header('Location', self.path)
                 self.end_headers()
             
                 return
@@ -76,6 +68,20 @@ class MyWebServer(BaseHTTPRequestHandler):
 
         except:
             self.send_error(404)
+
+
+
+    def check_Path(self):
+    
+        redirect = 0
+        if self.path.endswith("/"):
+            self.path+="index.html"
+        elif not(self.path.endswith(".html")) and not(self.path.endswith(".css")):
+            self.path+="/"
+            redirect = 1
+    
+        return redirect
+
 
 
 if __name__ == "__main__":
