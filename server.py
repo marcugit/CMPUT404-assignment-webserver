@@ -4,7 +4,7 @@ import SocketServer
 from os import curdir, sep
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 
-# Copyright 2013 Abram Hindle, Eddie Antonio Santos
+# Copyright 2013 Abram Hindle, Eddie Antonio Santos, Ana Marcu
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
